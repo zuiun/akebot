@@ -9,7 +9,6 @@ const selectionTime = 15000;
 const waifuTime = 60000;
 const recentAction = new Set ();
 const servers = {};
-let searching = false;
 let counter = 0;
 
 client.once ("ready", () => {
@@ -610,12 +609,12 @@ async function execute (query, message, search) {
 	}
 
 	if (search) {
-		if (searching) {
+		if (queue.searching) {
 			message.channel.send ("I'm already searching for music, you shitty admiral! Wait your turn!");
 			return;
 		} else {
 			message.channel.send (`I'm currently searching for **${query}**, you shitty admiral!`);
-			searching = true;
+			queue.searching = true;
 		}
 
 		const results = await ytdlInfo.getInfo (`ytsearch10:${query}`, ["--default-search=ytsearch", "-i", "--format=best"], true), songs = [];
@@ -656,7 +655,7 @@ async function execute (query, message, search) {
 		});
 		collector.on ("end", () => {
 			message.channel.send ("I've stopped listening for a song choice, you shitty admiral!");
-			searching = false;
+			queue.searching = false;
 		});
 	} else {
 		message.channel.send (`I'm currently searching for **${query}**, you shitty admiral!`);
