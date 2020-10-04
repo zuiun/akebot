@@ -1,3 +1,10 @@
+/*
+ * Akebot
+ * index.js
+ * Version 1.0.1
+ * zuiun
+ */
+
 const { token } = require ("./config.json");
 const extras = require ("./extras.json");
 const ytdlInfo = require ("ytdl-getinfo");
@@ -173,7 +180,7 @@ function waifu (query, message) {
 		return;
 	}
 
-	const database = JSON.parse (fs.readFileSync ("./database.json", "utf-8"));
+	const database = JSON.parse (fs.readFileSync ("./database.json", "utf-8")), marriages = JSON.parse (fs.readFileSync ("./marriages.json", "utf-8"));
 	let search;
 
 	switch (query [0]) {
@@ -202,8 +209,7 @@ function waifu (query, message) {
 
 		for (const i in database) {
 			if (i === search) {
-				const images = database [i] [1];
-				const gif = [];
+				const images = database [i] [1], gif = [];
 
 				for (const j in images) {
 					if (images [j].startsWith ("https://tenor.com/view/") || images [j].endsWith (".gif")) {
@@ -214,7 +220,7 @@ function waifu (query, message) {
 				if (gif.length > 0) {
 					message.channel.send (gif [Math.floor (Math.random () * gif.length)]);
 
-					if (isMarried (i, message.member.id)) {
+					if (isMarried (marriages, i, message.member.id)) {
 						addTimerEXP (i, message.member.id, 1);
 					}
 
@@ -249,7 +255,7 @@ function waifu (query, message) {
 
 				message.channel.send (images [Math.floor (Math.random () * images.length)]);
 
-				if (isMarried (i, message.member.id)) {
+				if (isMarried (marriages, i, message.member.id)) {
 					addTimerEXP (i, message.member.id, 1);
 				}
 
@@ -328,20 +334,22 @@ function marry (query, message) {
 		return;
 	}
 
-	const database = JSON.parse (fs.readFileSync ("./database.json", "utf-8")), person = message.author.id;
+	const database = JSON.parse (fs.readFileSync ("./database.json", "utf-8")), marriages = JSON.parse (fs.readFileSync ("./marriages.json", "utf-8")), person = message.author.id;
 	let search;
 
-	createMarriage (person);
+	createMarriage (marriages, person);
 
 	if (search !== "random") {
 		switch (query [0].toLowerCase ()) {
 		case "view": {
+			search = aliasName (query.slice (1).join (" ").toLowerCase ());
+
 			const araragi = getMention (search);
 
 			if (araragi) {
-				message.channel.send (`<@${araragi}> is married to ${getMarriage (araragi)}, you shitty admiral! Don't pry into other peoples' lives!`);
+				message.channel.send (`<@${araragi}> is married to ${getMarriage (marriages, araragi)}, you shitty admiral! Don't pry into other peoples' lives!`);
 			} else {
-				message.channel.send (`You're married to ${getMarriage (person)}, you stupid admiral! How did you manage to forget that!?`);
+				message.channel.send (`You're married to ${getMarriage (marriages, person)}, you stupid admiral! How did you manage to forget that!?`);
 			}
 
 			break;
@@ -356,7 +364,7 @@ function marry (query, message) {
 				return;
 			}
 
-			if (isMarried (search, person) > -1) {
+			if (isMarried (marriages, search, person) > -1) {
 				for (const i in database) {
 					if (i === search) {
 						const data = database [i];
@@ -384,7 +392,7 @@ function marry (query, message) {
 
 			for (const i in database) {
 				if (i === search) {
-					const marriages = JSON.parse (fs.readFileSync ("./marriages.json", "utf-8")), marriage = isMarried (search, person);
+					const marriage = isMarried (marriages, search, person);
 
 					if (marriage > -1) {
 						marriages [person].splice (marriage, 1);
@@ -419,9 +427,7 @@ function marry (query, message) {
 	}
 }
 
-function createMarriage (person) {
-	const marriages = JSON.parse (fs.readFileSync ("./marriages.json", "utf-8"));
-
+function createMarriage (marriages, person) {
 	if (! marriages [person]) {
 		marriages [person] = [];
 		fs.writeFile ("./marriages.json", JSON.stringify (marriages), (error) => {
@@ -432,9 +438,7 @@ function createMarriage (person) {
 	}
 }
 
-function getMarriage (person) {
-	const marriages = JSON.parse (fs.readFileSync ("./marriages.json", "utf-8"));
-
+function getMarriage (marriages, person) {
 	if (marriages [person]) {
 		const marriage = marriages [person];
 
@@ -442,7 +446,7 @@ function getMarriage (person) {
 			let girls = "";
 
 			for (const i in marriage) {
-				const exp = getEXP (marriage [i] [0], person);
+				const exp = getEXP (marriages, marriage [i] [0], person);
 				let add = `**${marriage [i] [0]}** (**${getLevel (exp)}** [**${exp}**])`;
 
 				if (i <= marriage.length - 2) {
@@ -463,9 +467,7 @@ function getMarriage (person) {
 	return "**nobody**";
 }
 
-function isMarried (query, person) {
-	const marriages = JSON.parse (fs.readFileSync ("./marriages.json", "utf-8"));
-
+function isMarried (marriages, query, person) {
 	if (marriages [person]) {
 		for (let i = 0; i < marriages [person].length; i ++) {
 			if (marriages [person] [i] [0] === query) {
@@ -477,8 +479,8 @@ function isMarried (query, person) {
 	return -1;
 }
 
-function getEXP (query, person) {
-	const marriages = JSON.parse (fs.readFileSync ("./marriages.json", "utf-8")), married = isMarried (query, person);
+function getEXP (marriages, query, person) {
+	const married = isMarried (marriages, query, person);
 
 	if (married > -1) {
 		return marriages [person] [married] [1];
@@ -506,7 +508,7 @@ function getLevel (exp) {
 }
 
 function addEXP (query, person, amount) {
-	const marriages = JSON.parse (fs.readFileSync ("./marriages.json", "utf-8")), married = isMarried (query, person);
+	const marriages = JSON.parse (fs.readFileSync ("./marriages.json", "utf-8")), married = isMarried (marriages, query, person);
 
 	if (married > -1) {
 		marriages [person] [married] [1] += amount;
