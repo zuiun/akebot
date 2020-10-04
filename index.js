@@ -1,7 +1,7 @@
 /*
  * Akebot
  * index.js
- * Version 1.0.1
+ * Version 1.0.2
  * zuiun
  */
 
@@ -601,10 +601,6 @@ async function execute (query, message, search) {
 		return;
 	}
 
-	if (! queue.connection) {
-		queue.connection = await voiceChannel.join ();
-	}
-
 	if (! query) {
 		message.channel.send ("You didn't give me a song, you stupid admiral!");
 		return;
@@ -651,7 +647,7 @@ async function execute (query, message, search) {
 					length: songs [index].length
 				};
 
-				addSong (message, song);
+				addSong (voiceChannel, message, song);
 				collector.stop ();
 			}
 		});
@@ -669,7 +665,7 @@ async function execute (query, message, search) {
 			length: timestamp (parseInt (result.items [0].duration) * 1000)
 		};
 
-		addSong (message, song);
+		addSong (voiceChannel, message, song);
 	}
 }
 
@@ -691,8 +687,12 @@ function timestamp (ms) {
 	return time;
 }
 
-function addSong (message, song) {
+async function addSong (voiceChannel, message, song) {
 	const queue = servers [message.guild.id];
+
+	if (! queue.connection) {
+		queue.connection = await voiceChannel.join ();
+	}
 
 	queue.songs.push (song);
 	message.channel.send (`Even though this is your job, I added **${song.title}** to the queue for you, you shitty admiral!`);
