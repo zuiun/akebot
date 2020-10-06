@@ -887,9 +887,10 @@ function remove (query, message) {
 function stop (message) {
 	const queue = servers [message.guild.id];
 
+	queue.songs = [];
+	queue.searching = false;
 	queue.index = 0;
 	queue.loopState = 0;
-	queue.songs = [];
 
 	if (! queue.connection) {
 		message.channel.send ("I can't stop music without being in a voice channel, you stupid admiral!");
