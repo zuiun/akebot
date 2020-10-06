@@ -205,7 +205,7 @@ function waifu (query, message) {
 		message.channel.send (random [index] [1]);
 		return;
 	} case "gif": {
-		search = aliasName (query.slice (1).join (" ").toLowerCase ());
+		search = aliasName (query.slice (1).join (" "));
 
 		for (const i in database) {
 			if (i === search) {
@@ -220,7 +220,7 @@ function waifu (query, message) {
 				if (gif.length > 0) {
 					message.channel.send (gif [Math.floor (Math.random () * gif.length)]);
 
-					if (isMarried (marriages, i, message.member.id)) {
+					if (marriageIndex (marriages, i, message.member.id) > -1) {
 						addTimerEXP (i, message.member.id, 1);
 					}
 
@@ -234,7 +234,7 @@ function waifu (query, message) {
 
 		break;
 	} default: {
-		search = aliasName (query.join (" ").toLowerCase ());
+		search = aliasName (query.join (" "));
 
 		if (search === "akebono") {
 			if (counter < 1) {
@@ -255,7 +255,7 @@ function waifu (query, message) {
 
 				message.channel.send (images [Math.floor (Math.random () * images.length)]);
 
-				if (isMarried (marriages, i, message.member.id)) {
+				if (marriageIndex (marriages, i, message.member.id) > -1) {
 					addTimerEXP (i, message.member.id, 1);
 				}
 
@@ -279,7 +279,7 @@ function aliasName (query) {
 		}
 
 		for (const j in database [i] [0]) {
-			if (database [i] [0] [j] === query) {
+			if (database [i] [0] [j].toLowerCase () === query.toLowerCase ()) {
 				return i;
 			}
 		}
@@ -299,7 +299,7 @@ function rate (query, message) {
 
 	switch (query [0]) {
 	case "fun": {
-		search = aliasName (query.slice (1).join (" ").toLowerCase ());
+		search = aliasName (query.slice (1).join (" "));
 
 		for (const i in database) {
 			if (i === search) {
@@ -310,7 +310,7 @@ function rate (query, message) {
 
 		break;
 	} default: {
-		search = aliasName (query.join (" ").toLowerCase ());
+		search = aliasName (query.join (" "));
 
 		for (const i in database) {
 			if (i === search) {
@@ -342,7 +342,7 @@ function marry (query, message) {
 	if (search !== "random") {
 		switch (query [0].toLowerCase ()) {
 		case "view": {
-			search = aliasName (query.slice (1).join (" ").toLowerCase ());
+			search = aliasName (query.slice (1).join (" "));
 
 			const araragi = getMention (search);
 
@@ -354,7 +354,7 @@ function marry (query, message) {
 
 			break;
 		} case "fun": {
-			search = aliasName (query.slice (1).join (" ").toLowerCase ());
+			search = aliasName (query.slice (1).join (" "));
 
 			if (! search) {
 				message.channel.send ("You need to ask for a marriage partner, you perverted admiral!");
@@ -364,7 +364,7 @@ function marry (query, message) {
 				return;
 			}
 
-			if (isMarried (marriages, search, person) > -1) {
+			if (marriageIndex (marriages, search, person) > -1) {
 				for (const i in database) {
 					if (i === search) {
 						const data = database [i];
@@ -380,7 +380,7 @@ function marry (query, message) {
 			message.channel.send (`You're not married to **${search}**, you stupid admiral!`);
 			break;
 		} default: {
-			search = aliasName (query.join (" ").toLowerCase ());
+			search = aliasName (query.join (" "));
 
 			if (! search) {
 				message.channel.send ("Even though you're pathetic, I'm not going to marry you to the air out of pity, you shitty admiral!");
@@ -392,7 +392,7 @@ function marry (query, message) {
 
 			for (const i in database) {
 				if (i === search) {
-					const marriage = isMarried (marriages, search, person);
+					const marriage = marriageIndex (marriages, search, person);
 
 					if (marriage > -1) {
 						marriages [person].splice (marriage, 1);
@@ -467,10 +467,10 @@ function getMarriage (marriages, person) {
 	return "**nobody**";
 }
 
-function isMarried (marriages, query, person) {
+function marriageIndex (marriages, query, person) {
 	if (marriages [person]) {
 		for (let i = 0; i < marriages [person].length; i ++) {
-			if (marriages [person] [i] [0] === query) {
+			if (marriages [person] [i] [0].toLowerCase () === query.toLowerCase ()) {
 				return i;
 			}
 		}
@@ -480,7 +480,7 @@ function isMarried (marriages, query, person) {
 }
 
 function getEXP (marriages, query, person) {
-	const married = isMarried (marriages, query, person);
+	const married = marriageIndex (marriages, query, person);
 
 	if (married > -1) {
 		return marriages [person] [married] [1];
@@ -508,7 +508,7 @@ function getLevel (exp) {
 }
 
 function addEXP (query, person, amount) {
-	const marriages = JSON.parse (fs.readFileSync ("./marriages.json", "utf-8")), married = isMarried (marriages, query, person);
+	const marriages = JSON.parse (fs.readFileSync ("./marriages.json", "utf-8")), married = marriageIndex (marriages, query, person);
 
 	if (married > -1) {
 		marriages [person] [married] [1] += amount;
@@ -546,7 +546,7 @@ function getMention (query) {
 }
 
 function list (query, message) {
-	const database = JSON.parse (fs.readFileSync ("./database.json", "utf-8")), search = aliasName (query.join (" ").toLowerCase ());
+	const database = JSON.parse (fs.readFileSync ("./database.json", "utf-8")), search = aliasName (query.join (" "));
 	let waifus = "";
 
 	if (search) {
