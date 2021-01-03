@@ -1119,6 +1119,7 @@ function remove (query, message) {
 function stop (message) {
 	const queue = servers [message.guild.id];
 
+	queue.songs = [];
 	queue.searching = false;
 	queue.index = 0;
 	queue.loopState = 0;
