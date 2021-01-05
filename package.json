@@ -1,6 +1,6 @@
 {
   "name": "akebot",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Discord bot that does waifu and music things",
   "main": "index.js",
   "dependencies": {
@@ -10,7 +10,7 @@
     "ffmpeg-static": "^4.2.7",
     "fluent-ffmpeg": "^2.1.2",
     "nodemon": "^2.0.6",
-    "ytdl-core": "^4.3.1",
+    "ytdl-core": "^4.4.0",
     "ytsr": "^3.2.1"
   },
   "devDependencies": {

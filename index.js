@@ -1,7 +1,7 @@
 /*
  * Akebot
  * index.js
- * Version 1.1.0
+ * Version 1.1.1
  * zuiun
  */
 
@@ -56,7 +56,7 @@ client.on ("message", message => {
 	switch (command) {
 	case "help": {
 		if (args.length < 1) {
-			message.channel.send (`Special-type destroyer number 18, 8th of the Ayanami-class, Akebono. My command prefix is **${prefix}**, but you already knew that! These are my commands (use **${prefix}help command** to find out how to use them), you shitty admiral!\n- **${prefix}help**\n- **${prefix}prefix**\n- **${prefix}waifu**\n- **${prefix}rate**\n- **${prefix}marry**\n- **${prefix}list**\n- **${prefix}8ball**\n- **${prefix}music**\nI also have secret commands, not that I'll tell you what they are!\nIf you want to examine me, you can go to my GitHub at https://github.com/zuiun/akebot, you perverted admiral!\nYou can force me to join your server by using this link, you shitty admiral: https://discord.com/oauth2/authorize?client_id=760952512172785685&scope=bot&permissions=573623552`);
+			message.channel.send (`Special-type destroyer number 18, 8th of the Ayanami-class, Akebono. My command prefix is **${prefix}**, but you already knew that! These are my commands (use **${prefix}help command** to find out how to use them), you shitty admiral!\n- **${prefix}help**\n- **${prefix}prefix**\n- **${prefix}waifu**\n- **${prefix}rate**\n- **${prefix}marry**\n- **${prefix}list**\n- **${prefix}8ball**\n- **${prefix}music**\nI also have secret commands, not that I'll tell you what they are!\nIf you want to examine me, you can go to my GitHub at https://github.com/zuiun/akebot, you perverted admiral!\nYou can force me to join your server by using this link, you shitty admiral: https://discord.com/oauth2/authorize?client_id=760952512172785685&scope=bot&permissions=540068896`);
 		} else {
 			const query = prefix + args [0];
 
